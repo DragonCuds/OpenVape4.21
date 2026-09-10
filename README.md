@@ -2,6 +2,8 @@
 
 Vape 4.21 的 Java 层与 Windows x64 原生桥接层研究性恢复工程，附带完整中文本地化。
 
+>修改日志 https://github.com/minecrafttzh/OpenVape4.21/blob/main/CHANGELOG.md
+
 基于原项目的修复与修改：
 
 >修复注入器因权限问题无法注入的bug
