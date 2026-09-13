@@ -242,8 +242,11 @@ public class AutoMaceRotationController extends AdaptiveRotationController {
     }
 
     private int requiredTicks(float angle) {
+        // 提前量 = 角度/最大每 tick 转角，无上限——旧版 clamp 到 [2,4]：目标在
+        // 滑翔方向视野外 60°~120° 时只提前 4 tick 启动，高速跟踪也无法在命中前
+        // 转到位（脱鞘翅后重锤大面积落空）。大角度需要更早 committed 持续跟随。
         int ticks = (int)Math.ceil(angle / MAX_ANGLE_PER_TICK) + 1;
-        return Math.max(2, Math.min(4, ticks));
+        return Math.max(2, ticks);
     }
 
     private float[] calculateAngles(double fromX, double fromY, double fromZ,

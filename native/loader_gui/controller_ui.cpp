@@ -627,16 +627,16 @@ void ControllerUi::drawMinecraftSelection(Gdiplus::Graphics& graphics) {
     const auto processes = model_.minecraftProcesses();
     if (processes.empty()) {
         drawLogo(graphics, 182.0f - 80.0f * logoPosition_);
-        drawText(graphics, L"未找到 Minecraft", 295, 234, 234, 24, 13,
+        drawText(graphics, L"", 295, 234, 234, 24, 13,
             Gdiplus::Color(255, 218, 215, 219), true, Gdiplus::StringAlignmentCenter);
-        drawText(graphics, L"请先打开 Minecraft", 295, 251, 234, 22, 12,
+        drawText(graphics, L"", 295, 251, 234, 22, 12,
             Gdiplus::Color(255, 116, 113, 117), false, Gdiplus::StringAlignmentCenter);
         return;
     }
     drawLogo(graphics, 182.0f - 80.0f * logoPosition_);
-    drawText(graphics, L"选择要使用的 Minecraft", 220, 150, 384, 38, 18,
+    drawText(graphics, L"", 220, 150, 384, 38, 18,
         Gdiplus::Color(255, 218, 215, 219), true, Gdiplus::StringAlignmentCenter);
-    drawText(graphics, L"请确保游戏已完全加载", 220, 179, 384, 22, 12,
+    drawText(graphics, L"", 220, 179, 384, 22, 12,
         Gdiplus::Color(255, 116, 113, 117), false, Gdiplus::StringAlignmentCenter);
     float y = 210.0f;
     for (const auto& process : processes) {
