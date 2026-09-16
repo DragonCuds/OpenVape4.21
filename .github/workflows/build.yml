@@ -1,0 +1,36 @@
+name: Build Windows exe
+
+on:
+  push:
+    branches: [targetfilter-fix]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build Java payload
+        run: .\gradlew.bat injectionJar --no-daemon
+
+      - name: Set up MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build native (CMake + MSVC)
+        run: |
+          cd native
+          cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DVAPE421_PRODUCT_JAR="${{ github.workspace }}\build\libs\vape421-product-recovery-4.21.36-injection.jar"
+          cmake --build build --config Release
+
+      - name: Upload exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: Vape-v4.21-Offline
+          path: native/build/dist/Vape-v4.21*.exe
