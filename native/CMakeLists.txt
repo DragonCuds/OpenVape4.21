@@ -60,7 +60,9 @@ target_include_directories(Vape421Native PRIVATE
 target_compile_definitions(Vape421Native PRIVATE
         WIN32_LEAN_AND_MEAN
         _CRT_SECURE_NO_WARNINGS)
-target_compile_options(Vape421Native PRIVATE -Wall -Wextra -Wno-unused-parameter)
+target_compile_options(Vape421Native PRIVATE
+        $<$<C_COMPILER_ID:MSVC>:/W4>
+        $<$<NOT:$<C_COMPILER_ID:MSVC>>:-Wall -Wextra -Wno-unused-parameter>)
 target_link_libraries(Vape421Native PRIVATE user32 ws2_32)
 
 # GUI loader (upstream VapeLoader): process selection -> inject. The only
@@ -86,7 +88,9 @@ target_compile_definitions(Vape421LoaderGui PRIVATE
         WIN32_LEAN_AND_MEAN
         UNICODE _UNICODE NOMINMAX
         _CRT_SECURE_NO_WARNINGS)
-target_compile_options(Vape421LoaderGui PRIVATE -Wall -Wextra -Wno-unused-parameter)
+target_compile_options(Vape421LoaderGui PRIVATE
+        $<$<CXX_COMPILER_ID:MSVC>:/W4>
+        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wno-unused-parameter>)
 target_link_libraries(Vape421LoaderGui PRIVATE
         gdiplus
         winhttp
@@ -126,7 +130,9 @@ if(BUILD_TESTING)
     target_compile_definitions(Vape421BootstrapTest PRIVATE
             WIN32_LEAN_AND_MEAN
             _CRT_SECURE_NO_WARNINGS)
-    target_compile_options(Vape421BootstrapTest PRIVATE -Wall -Wextra -Wno-unused-parameter)
+    target_compile_options(Vape421BootstrapTest PRIVATE
+            $<$<C_COMPILER_ID:MSVC>:/W4>
+            $<$<NOT:$<C_COMPILER_ID:MSVC>>:-Wall -Wextra -Wno-unused-parameter>)
     target_link_libraries(Vape421BootstrapTest PRIVATE ws2_32)
     add_test(NAME Vape421BootstrapStandalone
             COMMAND Vape421BootstrapTest standalone)

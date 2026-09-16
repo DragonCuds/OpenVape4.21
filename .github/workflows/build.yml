@@ -17,20 +17,14 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build Java payload
-        run: .\gradlew.bat injectionJar --no-daemon
-
-      - name: Set up MSVC
-        uses: ilammy/msvc-dev-cmd@v1
-
-      - name: Build native (CMake + MSVC)
-        run: |
-          cd native
-          cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DVAPE421_PRODUCT_JAR="${{ github.workspace }}\build\libs\vape421-product-recovery-4.21.36-injection.jar"
-          cmake --build build --config Release
+      - name: Build full injection bundle (jar + DLL + exe via MSVC)
+        shell: cmd
+        run: .\gradlew.bat prepareInjectionBundle --no-daemon -PnativeJavaHome=%JAVA_HOME%
+        env:
+          JAVA_HOME: ${{ env.JAVA_HOME }}
 
       - name: Upload exe
         uses: actions/upload-artifact@v4
         with:
-          name: Vape-v4.21-Offline
-          path: native/build/dist/Vape-v4.21*.exe
+          name: Vape-injection-bundle
+          path: build/injection/
