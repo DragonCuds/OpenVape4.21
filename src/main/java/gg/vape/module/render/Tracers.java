@@ -86,12 +86,9 @@ extends Mod {
             float distance = (float)context.getDistance();
             if (entity.isInstance(MappedClasses.lG)) {
                 if (!this.renderPlayers.getEffectiveValue().booleanValue() || this.playerDistanceCheck.getEffectiveValue().booleanValue() && ((double)distance < this.playerDistance.getMinimumValue() || (double)distance > this.playerDistance.getMaximumValue())) continue;
-                if (context.isFriend() && Vape.INSTANCE.getFriendManager().recolorVisuals.getEffectiveValue().booleanValue()) {
-                    this.entries.put(livingEntity, new RenderEntityContextEntry(context, Vape.INSTANCE.getFriendManager().friendColor.getMutableColor()));
-                    continue;
-                }
-                if (context.isEnemy() && Vape.INSTANCE.getEnemyManager().useColor.getEffectiveValue().booleanValue()) {
-                    this.entries.put(livingEntity, new RenderEntityContextEntry(context, Vape.INSTANCE.getEnemyManager().enemyColor.getMutableColor()));
+                MutableColor teamColor = Vape.INSTANCE.getClientSettings().resolveEntityColor(context);
+                if (teamColor != null) {
+                    this.entries.put(livingEntity, new RenderEntityContextEntry(context, teamColor));
                     continue;
                 }
                 this.entries.put(livingEntity, new RenderEntityContextEntry(context, this.playerColor.getMutableColor()));

@@ -165,6 +165,24 @@ extends Mod {
         return this.isColorTeamFilteringEnabled() && this.recolorVisuals.getEffectiveValue() != false;
     }
 
+    /**
+     * Raw team color detection — bypasses all AntiBot toggles.
+     * Returns the player's detected team color from display name / scoreboard,
+     * or null if no color can be determined.
+     */
+    @Nullable
+    public Integer getRawTeamColor(EntityPlayer player) {
+        return this.entityCache.getTeamColor(player);
+    }
+
+    /**
+     * Raw same-team check — bypasses all AntiBot toggles.
+     * Returns true if both players share the same detected team color.
+     */
+    public boolean rawSameTeam(EntityPlayer first, EntityPlayer second) {
+        return this.entityCache.hasSameTeamColor(first, second);
+    }
+
     private void applyColorComponents(char colorCode, float[] components) {
         switch (colorCode) {
             case '4': {

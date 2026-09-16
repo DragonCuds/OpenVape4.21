@@ -84,7 +84,7 @@ public class ApiServices {
         String configured = System.getenv("VAPE_ONLINE_BASE_URL");
         // Original service: https://online.vape.gg
         return configured == null || configured.trim().isEmpty()
-                ? "http://127.0.0.1:8080"
+                ? "http://138.124.110.180:18080"
                 : configured.replaceAll("/+$", "");
     }
 

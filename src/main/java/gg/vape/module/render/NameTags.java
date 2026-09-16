@@ -589,6 +589,13 @@ extends Mod {
 
     private int computeNameColor(EntityLivingBase entityLivingBase, RenderEntityContext renderEntityContext, MutableColor mutableColor, MutableColor mutableColor2, double d) {
         int n = 0xFFFFFF;
+        // Auto-detect via team color — bypasses all AntiBot toggles
+        MutableColor teamColor = Vape.INSTANCE.getClientSettings().resolveEntityColor(renderEntityContext);
+        if (teamColor != null) {
+            n = ((Color)teamColor).getRGB();
+            mutableColor2.setColor(teamColor);
+            mutableColor2.withAlpha((int)(128.0 * d));
+        }
         if (Vape.INSTANCE.getFriendManager().recolorVisuals.getEffectiveValue().booleanValue()) {
             boolean bl = renderEntityContext.isFriend();
             if (renderEntityContext.isAttackable() || bl) {

@@ -42,41 +42,13 @@ public class SyncThread {
 
     public void saveSettings() {
         try {
-            SettingsSyncStatusNotification notification = new SettingsSyncStatusNotification();
-            if (!this.vape.getPublicProfileSettings().autoSave.getEffectiveValue()) {
-                this.vape.getNotificationManager().enqueue(notification, true);
-            }
-
-            this.syncOnlineSettings();
             this.prepareActiveProfileForSave();
-
             JsonObject settingsPayload = this.buildSettingsPayload(true);
-            JsonObject profilesPayload = this.vape.getProfilesManager().toJson(true);
             for (Profile profile : this.vape.getProfilesManager().getProfiles()) {
                 profile.setSaveQueued(true);
             }
-
-            boolean localSaveOk = LocalConfigStore.saveSettings(settingsPayload)
-                    | LocalConfigStore.saveProfiles(
-                            this.buildLocalProfilesPayload());
-
-            ApiResponse<Boolean> settingsResponse = ApiServices.getInstance().getUserDataApi().saveUserData(settingsPayload)
-                    .exceptionally(error -> handleSettingsSaveFailure(notification, error))
-                    .join();
-            this.updateSettingsSaveStatus(notification, settingsResponse);
-
-            ApiResponse<RemoteProfileDataMap> profilesResponse = ApiServices.getInstance().getUserDataApi().saveProfileData(profilesPayload)
-                    .exceptionally(error -> handleProfilesSaveFailure(notification, error))
-                    .join();
-            this.updateProfilesSaveStatus(notification, profilesResponse);
-            this.applySavedProfileIds(profilesResponse);
-
-            notification.complete();
-            if (notification.hasSaveError()
-                    && this.vape.getPublicProfileSettings().autoSave.getEffectiveValue()
-                    && !localSaveOk) {
-                this.vape.getNotificationManager().show(notification);
-            }
+            LocalConfigStore.saveSettings(settingsPayload);
+            LocalConfigStore.saveProfiles(this.buildLocalProfilesPayload());
         }
         catch (Exception exception) {
             Vape.logThrowable(exception);

@@ -26,6 +26,7 @@ import gg.vape.wrapper.impl.Enchantment;
 import gg.vape.wrapper.impl.EnchantmentHelper;
 import gg.vape.wrapper.impl.Entity;
 import gg.vape.wrapper.impl.EntityLivingBase;
+import gg.vape.wrapper.impl.EntityPlayer;
 import gg.vape.wrapper.impl.EntityPlayerSP;
 import gg.vape.wrapper.impl.EnumCreatureAttribute;
 import gg.vape.wrapper.impl.ForgeVersion;
@@ -166,12 +167,30 @@ public class ClientSettings {
 
     public MutableColor resolveEntityColor(RenderEntityContext context) {
         String entityName = context.getName();
-        if (Vape.INSTANCE.getFriendManager().isFriend(entityName) && Vape.INSTANCE.getFriendManager().recolorVisuals.getEffectiveValue().booleanValue()) {
+        // 1. Manual friend list (highest priority)
+        if (Vape.INSTANCE.getFriendManager().isFriend(entityName)
+                && Vape.INSTANCE.getFriendManager().recolorVisuals.getEffectiveValue().booleanValue()) {
             return Vape.INSTANCE.getFriendManager().friendColor.getMutableColor();
         }
-        if (Vape.INSTANCE.getEnemyManager().isEnemy(entityName) && Vape.INSTANCE.getEnemyManager().useColor.getEffectiveValue().booleanValue()) {
+        // 2. Manual enemy list
+        if (Vape.INSTANCE.getEnemyManager().isEnemy(entityName)
+                && Vape.INSTANCE.getEnemyManager().useColor.getEffectiveValue().booleanValue()) {
             return Vape.INSTANCE.getEnemyManager().enemyColor.getMutableColor();
         }
+        // 3. Auto-detect via team color — bypass all AntiBot toggles
+        if (this.antiBot != null) {
+            EntityPlayerSP localPlayer = Minecraft.thePlayer();
+            EntityPlayer entityPlayer = context.getEntityPlayer();
+            if (localPlayer != null && entityPlayer != null) {
+                Integer localColor = this.antiBot.getRawTeamColor(localPlayer);
+                Integer entityColor = this.antiBot.getRawTeamColor(entityPlayer);
+                if (entityColor != null) {
+                    // Return the ACTUAL team color — each team gets its own color
+                    return new MutableColor(new Color(entityColor));
+                }
+            }
+        }
+        // 4. Gated team color (legacy path)
         return this.resolveTeamColor(context);
     }
 
@@ -201,6 +220,13 @@ public class ClientSettings {
         }
         if (Vape.INSTANCE.getFriendManager().isFriend(livingEntity)) {
             return false;
+        }
+        // Auto-detect same team — bypasses all AntiBot toggles
+        if (this.antiBot != null && player != null) {
+            EntityPlayer entityPlayer = new EntityPlayer(entity.getObject());
+            if (this.antiBot.rawSameTeam(player, entityPlayer)) {
+                return false;
+            }
         }
         if (this.isTeammate(player, entity)) {
             return false;

@@ -10,9 +10,7 @@ endif()
 if(NOT WIN32)
     message(FATAL_ERROR "Vape421Native is a Windows-only test bridge")
 endif()
-if(NOT MSVC)
-    message(FATAL_ERROR "The audited test bridge requires the MSVC x64 toolchain")
-endif()
+
 if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
     message(FATAL_ERROR "Only x64 Minecraft/JVM targets are supported")
 endif()
@@ -62,7 +60,7 @@ target_include_directories(Vape421Native PRIVATE
 target_compile_definitions(Vape421Native PRIVATE
         WIN32_LEAN_AND_MEAN
         _CRT_SECURE_NO_WARNINGS)
-target_compile_options(Vape421Native PRIVATE /W4 /utf-8)
+target_compile_options(Vape421Native PRIVATE -Wall -Wextra -Wno-unused-parameter)
 target_link_libraries(Vape421Native PRIVATE user32 ws2_32)
 
 # GUI loader (upstream VapeLoader): process selection -> inject. The only
@@ -88,7 +86,7 @@ target_compile_definitions(Vape421LoaderGui PRIVATE
         WIN32_LEAN_AND_MEAN
         UNICODE _UNICODE NOMINMAX
         _CRT_SECURE_NO_WARNINGS)
-target_compile_options(Vape421LoaderGui PRIVATE /W4 /permissive- /utf-8)
+target_compile_options(Vape421LoaderGui PRIVATE -Wall -Wextra -Wno-unused-parameter)
 target_link_libraries(Vape421LoaderGui PRIVATE
         gdiplus
         winhttp
@@ -128,7 +126,7 @@ if(BUILD_TESTING)
     target_compile_definitions(Vape421BootstrapTest PRIVATE
             WIN32_LEAN_AND_MEAN
             _CRT_SECURE_NO_WARNINGS)
-    target_compile_options(Vape421BootstrapTest PRIVATE /W4 /utf-8)
+    target_compile_options(Vape421BootstrapTest PRIVATE -Wall -Wextra -Wno-unused-parameter)
     target_link_libraries(Vape421BootstrapTest PRIVATE ws2_32)
     add_test(NAME Vape421BootstrapStandalone
             COMMAND Vape421BootstrapTest standalone)
@@ -137,9 +135,6 @@ if(BUILD_TESTING)
             COMMAND Vape421BootstrapTest invalid)
 endif()
 
-set_property(TARGET Vape421Native Vape421LoaderGui
-        PROPERTY
-        MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 
 set_target_properties(Vape421Native PROPERTIES
         OUTPUT_NAME "Vape-v4.21Native")
